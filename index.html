@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Bilztri POS: smart billing for every business. Try the live demo with your own shop name and products.">
+<link rel="icon" href="assets/logo.jpg">
+<title>Bilztri POS Live Demo</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap">
+<style>
+  /* Layout: brochure scroll with one live POS workbench in the middle; the POS is the hero of the page. */
+  :root {
+    --bg: #f6f8f7; --surface: #ffffff; --surface-2: #eef2ef; --fg: #15181c; --fg-2: #3b434c; --muted: #6b7480;
+    --line: #dde3e0; --ink: #15181c; --ink-fg: #ffffff; --ink-muted: #a9b2ba;
+    --green: #5fc419; --green-dark: #3e9d0f; --green-soft: #e6f6d8; --lime: #8ee03a;
+    --amber: #e9a100; --amber-soft: #fff3d1; --red: #d9434a; --red-soft: #fde6e7;
+    --display: "Sora", "Helvetica Neue", Arial, sans-serif; --body: "Manrope", "Helvetica Neue", Arial, sans-serif;
+    --radius: 12px; --shadow: 0 10px 30px rgba(21,24,28,.10);
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    --bg: #0f1213; --surface: #171b1d; --surface-2: #1f2427; --fg: #eef2ee; --fg-2: #c5ccc8; --muted: #8e979e;
+    --line: #2b3236; --ink: #0a0c0d; --ink-fg: #ffffff; --ink-muted: #8e979e;
+    --green-soft: #1d2f12; --amber-soft: #3a2b00; --red-soft: #3a1619; --shadow: 0 10px 30px rgba(0,0,0,.5); color-scheme: dark } }
+  :root[data-theme="dark"] {
+    --bg: #0f1213; --surface: #171b1d; --surface-2: #1f2427; --fg: #eef2ee; --fg-2: #c5ccc8; --muted: #8e979e;
+    --line: #2b3236; --ink: #0a0c0d; --ink-fg: #ffffff; --ink-muted: #8e979e;
+    --green-soft: #1d2f12; --amber-soft: #3a2b00; --red-soft: #3a1619; --shadow: 0 10px 30px rgba(0,0,0,.5); color-scheme: dark }
+
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.5; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding-inline: 16px; padding-block: 0; }
+  h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; line-height: 1.15; }
+  h2 { font-size: clamp(22px, 3vw, 30px); font-weight: 600; }
+  p { margin: 0; }
+  .eyebrow { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--green-dark); font-weight: 700; }
+  button { font-family: inherit; font-size: inherit; cursor: pointer; }
+  input, select { font-family: inherit; font-size: 15px; color: var(--fg); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 9px 11px; width: 100%; min-width: 0; }
+  input:focus, select:focus, button:focus-visible { outline: 2px solid var(--green); outline-offset: 1px; }
+  label { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 5px; }
+  .btn { border: 0; border-radius: 10px; padding: 11px 18px; font-weight: 700; background: var(--green); color: #fff; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
+  .btn.secondary { background: var(--surface); color: var(--fg); border: 1px solid var(--line); }
+  .btn.ghost { background: transparent; color: var(--green-dark); padding: 6px 8px; }
+  .btn.dark { background: var(--ink); color: var(--ink-fg); }
+  .btn svg { width: 18px; height: 18px; }
+  svg.i { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  section { padding-block: 44px; }
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* HERO */
+  .hero { background: var(--ink); color: var(--ink-fg); padding-block: 40px 48px; position: relative; overflow: hidden; }
+  .hero:after { content: ""; position: absolute; right: -160px; top: -160px; width: 420px; height: 420px; border-radius: 50%; background: radial-gradient(circle, rgba(95,196,25,.32), rgba(95,196,25,0) 62%); pointer-events: none; }
+  .hero .wrap { position: relative; display: grid; gap: 22px; }
+  .logo { background: #fff; display: inline-block; padding: 8px 14px 8px 10px; border-radius: 10px; width: max-content; }
+  .logo img { height: 44px; display: block; }
+  .hero h1 { font-size: clamp(32px, 6vw, 56px); font-weight: 700; letter-spacing: -.01em; }
+  .hero h1 span { color: var(--lime); }
+  .hero .sub { color: #cfd6dc; font-size: 17px; max-width: 46ch; }
+  .hero .tags { color: #aab2ba; font-size: 14px; }
+  .hero .ctas { display: flex; flex-wrap: wrap; gap: 10px; }
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pills span { font-size: 13px; font-weight: 600; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14); border-radius: 20px; padding: 5px 12px; color: #e6ebee; }
+
+  /* STEPS HEADER */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 18px; }
+  .steps button { text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 14px; display: flex; gap: 12px; align-items: center; color: var(--fg); }
+  .steps button.on { border-color: var(--green); background: var(--green-soft); }
+  .steps .n { width: 30px; height: 30px; border-radius: 50%; background: var(--ink); color: var(--ink-fg); font-weight: 700; display: grid; place-items: center; flex: none; font-family: var(--display); }
+  .steps button.on .n { background: var(--green); }
+  .steps b { display: block; font-family: var(--display); font-weight: 600; }
+  .steps small { color: var(--muted); font-size: 12px; }
+  .pane { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; margin-top: 14px; }
+  .pane-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+  .pane-head h3 { font-size: 18px; font-weight: 600; }
+  .pane-head p { color: var(--muted); font-size: 13.5px; }
+  .fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+  .types { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin-top: 12px; }
+  .types button { background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 10px; display: flex; gap: 8px; align-items: center; color: var(--fg); font-weight: 600; font-size: 14px; }
+  .types button.on { border-color: var(--green); background: var(--green-soft); color: var(--green-dark); }
+  .types svg.i { width: 20px; height: 20px; flex: none; }
+  .next { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+
+  /* CATALOGUE EDITOR */
+  .cats { display: grid; gap: 12px; }
+  .cat { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .cat header { display: flex; align-items: center; gap: 10px; background: var(--surface-2); padding: 8px 10px; }
+  .cat header input { font-weight: 700; background: transparent; border-color: transparent; padding: 6px 8px; }
+  .cat header input:focus { background: var(--surface); border-color: var(--line); }
+  .cat .items { padding: 8px 10px; display: grid; gap: 6px; }
+  .row { display: grid; grid-template-columns: 1.6fr 1fr 1fr auto; gap: 6px; align-items: center; }
+  .row input { padding: 7px 9px; font-size: 14px; }
+  .row .del { background: transparent; border: 0; color: var(--muted); padding: 6px; border-radius: 6px; }
+  .row .del:hover { color: var(--red); background: var(--red-soft); }
+  .add { background: transparent; border: 1px dashed var(--line); border-radius: 8px; padding: 8px; color: var(--green-dark); font-weight: 700; width: 100%; }
+  .hint { font-size: 12.5px; color: var(--muted); }
+
+  /* POS */
+  .pos { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--surface); box-shadow: var(--shadow); }
+  .pos .top { background: var(--ink); color: var(--ink-fg); display: flex; align-items: center; gap: 10px; padding: 10px 14px; flex-wrap: wrap; }
+  .pos .top img { height: 26px; background: #fff; border-radius: 6px; padding: 3px 7px; }
+  .pos .top .shop { font-family: var(--display); font-weight: 600; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pos .top .tab { font-size: 13px; font-weight: 700; padding: 6px 11px; border-radius: 7px; background: transparent; border: 0; color: var(--ink-muted); }
+  .pos .top .tab.on { background: var(--green); color: #fff; }
+  .pos .body { display: grid; grid-template-columns: 1fr 300px; min-height: 420px; }
+  .pos .menu { padding: 12px; border-right: 1px solid var(--line); min-width: 0; }
+  .pos .cattabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+  .pos .cattabs button { background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px; padding: 7px 12px; font-weight: 700; font-size: 13.5px; color: var(--fg); }
+  .pos .cattabs button.on { background: var(--ink); color: var(--ink-fg); border-color: var(--ink); }
+  .pos .band { background: var(--green); color: #fff; font-family: var(--display); font-weight: 700; padding: 8px 12px; border-radius: 10px 10px 0 0; }
+  .pos .grid { background: var(--green-soft); padding: 10px; border-radius: 0 0 10px 10px; display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; }
+  .pos .item { background: var(--surface); border-radius: 9px; padding: 8px 10px; }
+  .pos .item b { display: block; font-size: 14px; margin-bottom: 6px; }
+  .pos .vars { display: grid; grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); gap: 6px; }
+  .pos .var { position: relative; text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 7px; padding: 7px 8px; color: var(--fg); }
+  .pos .var small { display: block; font-size: 11px; color: var(--muted); }
+  .pos .var em { font-style: normal; font-weight: 700; color: var(--green-dark); font-size: 14px; }
+  .pos .var.sel { border-color: var(--green); background: var(--green-soft); }
+  .pos .var .q { position: absolute; top: -7px; right: -6px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: var(--green); color: #fff; font-size: 11px; font-weight: 700; display: grid; place-items: center; }
+  .pos .cart { display: flex; flex-direction: column; min-width: 0; }
+  .pos .cart .list { padding: 12px; flex: 1; display: grid; gap: 8px; align-content: start; }
+  .pos .cart h4 { font-family: var(--display); margin: 0; font-size: 16px; display: flex; justify-content: space-between; align-items: baseline; }
+  .pos .cart h4 small { color: var(--muted); font-weight: 500; font-size: 12px; }
+  .line { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; align-items: center; }
+  .line b { font-size: 14px; }
+  .line .p { font-weight: 700; text-align: right; }
+  .line .qty { display: flex; align-items: center; gap: 6px; grid-column: 1 / -1; }
+  .line .qty button { width: 28px; height: 28px; border-radius: 7px; border: 1px solid var(--line); background: var(--surface); font-weight: 700; color: var(--fg); }
+  .line .qty button.plus { background: var(--green); color: #fff; border-color: var(--green); }
+  .line .qty span { min-width: 20px; text-align: center; font-weight: 700; }
+  .empty { color: var(--muted); text-align: center; padding: 30px 10px; font-size: 14px; }
+  .pay { display: flex; gap: 6px; }
+  .pay button { flex: 1; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 8px 0; font-weight: 700; color: var(--fg); font-size: 13px; }
+  .pay button.on { border-color: var(--green); background: var(--green-soft); color: var(--green-dark); }
+  .pos .total { border-top: 1px solid var(--line); padding: 12px; display: grid; gap: 10px; background: var(--surface); }
+  .pos .total .t { display: flex; justify-content: space-between; align-items: baseline; font-family: var(--display); font-weight: 700; font-size: 18px; }
+  .pos .total .t b { color: var(--green-dark); font-size: 26px; }
+  .pos .total .btns { display: flex; gap: 8px; }
+  .pos .total .btns button { flex: 1; border: 0; border-radius: 9px; padding: 11px; font-weight: 700; }
+  .pos .total .clear { background: var(--red-soft); color: var(--red); }
+  .pos .total .save { background: var(--green); color: #fff; flex: 2 !important; }
+  .pos .total .save:disabled { opacity: .5; cursor: not-allowed; }
+
+  /* TODAY */
+  .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 12px; }
+  .kpi { background: var(--surface-2); border-radius: 10px; padding: 12px 14px; }
+  .kpi.hi { background: var(--ink); color: var(--ink-fg); }
+  .kpi span { display: block; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+  .kpi.hi span { color: var(--ink-muted); }
+  .kpi b { font-family: var(--display); font-size: 24px; font-weight: 600; }
+  .kpi.hi b { color: var(--lime); }
+  .cards2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 12px 12px; }
+  .card { background: var(--surface-2); border-radius: 10px; padding: 12px 14px; }
+  .card h5 { margin: 0 0 8px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .paym { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .paym div { background: var(--surface); border-radius: 8px; padding: 8px; text-align: center; }
+  .paym div span { display: block; font-size: 11px; color: var(--muted); }
+  .paym div b { font-size: 15px; }
+  .hl { display: grid; grid-template-columns: 1fr 90px 30px; gap: 8px; align-items: center; font-size: 13px; margin-bottom: 6px; }
+  .hl i { height: 7px; border-radius: 4px; background: var(--green); display: block; }
+  .hl em { font-style: normal; text-align: right; color: var(--muted); }
+  .orders { padding: 0 12px 12px; display: grid; gap: 6px; }
+  .orders div { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; font-size: 13.5px; border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
+  .orders div .tag { font-size: 11px; font-weight: 700; background: var(--green-soft); color: var(--green-dark); border-radius: 4px; padding: 2px 6px; }
+
+  /* RECEIPT MODAL */
+  .modal { position: fixed; inset: 0; background: rgba(0,0,0,.55); display: grid; place-items: center; padding: 16px; z-index: 50; }
+  .receipt { background: #fff; color: #222; width: 300px; max-width: 100%; max-height: 90vh; overflow: auto; padding: 16px 14px; font-family: "Courier New", monospace; font-size: 12.5px; line-height: 1.45; border-radius: 6px; }
+  .receipt .c { text-align: center; }
+  .receipt .dash { border-top: 1px dashed #999; margin: 6px 0; }
+  .receipt .r { display: flex; justify-content: space-between; gap: 8px; }
+  .receipt .tot { font-weight: 700; font-size: 15px; }
+  .receipt .logo-r { height: 26px; display: block; margin: 0 auto 4px; }
+  .modal .actions { display: grid; gap: 8px; margin-top: 12px; }
+  .toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--ink-fg); padding: 10px 16px; border-radius: 10px; font-weight: 600; font-size: 14px; z-index: 60; box-shadow: var(--shadow); }
+
+  /* FEATURES, PRICING, PRINTER, CONTACT */
+  .ig { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 18px; }
+  .ig div { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; }
+  .ig svg.i { color: var(--green-dark); width: 26px; height: 26px; margin-bottom: 8px; }
+  .ig b { display: block; font-family: var(--display); font-weight: 600; margin-bottom: 3px; }
+  .ig span { color: var(--muted); font-size: 13.5px; }
+  .price { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 18px; }
+  .price div { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; position: relative; }
+  .price div.best { border-color: var(--green); background: var(--green-soft); }
+  .price div.best:before { content: "Best value"; position: absolute; top: -10px; right: 14px; background: var(--green); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 3px 9px; border-radius: 4px; }
+  .price span { display: block; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  .price b { display: block; font-family: var(--display); font-size: 30px; font-weight: 600; line-height: 1.1; }
+  .price b small { font-size: 14px; font-weight: 500; color: var(--muted); font-family: var(--body); }
+  .price p { margin-top: 8px; font-size: 14px; color: var(--fg-2); }
+  .price p em { font-style: normal; color: var(--green-dark); font-weight: 700; }
+  .printer { display: grid; grid-template-columns: 220px 1fr; gap: 20px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; margin-top: 18px; }
+  .printer img { width: 100%; max-width: 220px; border-radius: 8px; }
+  .printer h3 { font-size: 22px; font-weight: 600; margin-bottom: 6px; }
+  .printer p { color: var(--fg-2); font-size: 14.5px; }
+  .spec { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .spec span { font-size: 13px; font-weight: 600; background: var(--surface-2); border-radius: 20px; padding: 5px 12px; }
+  .contact { background: var(--ink); color: var(--ink-fg); border-radius: var(--radius); padding: 24px; display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; align-items: center; margin-top: 18px; }
+  .contact h2 { color: var(--ink-fg); }
+  .contact p { color: #cfd6dc; margin-top: 6px; }
+  .contact .num-box { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); border-radius: 10px; padding: 14px; }
+  .contact .num-box span { display: block; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 4px; }
+  .contact .num-box b { font-family: var(--display); font-size: 24px; color: var(--lime); user-select: all; }
+  .contact .num-box .row2 { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .foot { text-align: center; color: var(--muted); font-size: 12.5px; padding-block: 24px 40px; }
+
+  @media (max-width: 760px) {
+    section { padding-block: 32px; }
+    .steps { grid-template-columns: 1fr; }
+    .pos .body { grid-template-columns: 1fr; }
+    .pos .menu { border-right: 0; border-bottom: 1px solid var(--line); }
+    .row { grid-template-columns: 1fr 1fr auto; }
+    .row input:first-child { grid-column: 1 / -1; }
+    .num-grid { grid-template-columns: 1fr !important; }
+    .num-grid > div:last-child { justify-self: start; }
+    .kpis { grid-template-columns: 1fr; }
+    .cards2 { grid-template-columns: 1fr; }
+    .printer { grid-template-columns: 1fr; }
+    .contact { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: no-preference) { .pos .var, .types button, .steps button { transition: background .15s, border-color .15s; } }
+</style>
+<style>html,body{margin:0;padding:0} img{max-width:100%} [hidden]{display:none!important}</style>
+</head>
+<body>
+
+
+<!-- HERO -->
+<header class="hero">
+  <div class="wrap">
+    <div class="logo"><img src="assets/logo.jpg" alt="Bilztri"></div>
+    <h1>Your counter.<br>One smart <span>POS.</span></h1>
+    <p class="sub">Smart billing for restaurants, cafés, retail, grocery, salons, pharmacies, stalls and services. Runs on the phone, tablet or laptop you already own.</p>
+    <div class="pills"><span>Billing</span><span>Multiple orders</span><span>Cash · UPI · Card</span><span>Inventory</span><span>Waste</span><span>Reports</span><span>Receipt printing</span><span>English · हिन्दी</span></div>
+    <div class="ctas">
+      <a class="btn" href="#demo"><svg class="i" viewBox="0 0 24 24"><path d="M5 3l14 9-14 9z"/></svg>Try it with your own shop</a>
+      <a class="btn secondary" href="#pricing">See pricing</a>
+    </div>
+  </div>
+</header>
+
+<!-- LIVE DEMO -->
+<section id="demo">
+  <div class="wrap">
+    <div class="eyebrow">Live demo</div>
+    <h2>Build your own Bilztri in 3 steps</h2>
+    <p style="color:var(--muted); margin-top:6px; max-width:60ch">Type your shop name, add a few items and bill like you would at your counter. Everything you enter stays on this device.</p>
+
+    <div class="steps" role="tablist">
+      <button id="st1" class="on" data-step="1"><span class="n">1</span><div><b>Your profile</b><small>Shop name, type, receipt footer</small></div></button>
+      <button id="st2" data-step="2"><span class="n">2</span><div><b>Your products</b><small>Categories, items, prices</small></div></button>
+      <button id="st3" data-step="3"><span class="n">3</span><div><b>Start billing</b><small>Tap, pay, print</small></div></button>
+    </div>
+
+    <!-- STEP 1 -->
+    <div class="pane" id="pane1">
+      <div class="pane-head"><h3>Create your profile</h3><p>This is what appears on your receipts and dashboard.</p></div>
+      <div class="fields">
+        <div><label for="shopName">Shop name</label><input id="shopName" placeholder="e.g. Sharma Momos" maxlength="40"></div>
+        <div><label for="shopPhone">Shop phone</label><input id="shopPhone" placeholder="e.g. 98765 43210" maxlength="20" inputmode="tel"></div>
+        <div><label for="shopFooter">Receipt footer</label><input id="shopFooter" placeholder="Thank you, visit again!" maxlength="60"></div>
+      </div>
+      <label style="margin-top:14px">Business type (loads a sample catalogue you can edit)</label>
+      <div class="types" id="types"></div>
+      <div class="next"><button class="btn secondary" id="resetAll" type="button">Start over</button><button class="btn" id="to2" type="button">Next: add products</button></div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="pane" id="pane2" hidden>
+      <div class="pane-head"><h3>Your products</h3><p>Edit names and prices, add a second size or portion, remove what you don't sell.</p></div>
+      <div class="cats" id="cats"></div>
+      <button class="add" id="addCat" type="button" style="margin-top:10px">+ Add category</button>
+      <p class="hint" style="margin-top:8px">Variant 1 is required. Variant 2 is optional, for example Half / Full, Small / Large, 250 g / 1 kg.</p>
+      <div class="next"><button class="btn secondary" id="back1" type="button">Back</button><button class="btn" id="to3" type="button">Next: start billing</button></div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="pane" id="pane3" hidden style="padding:0; border:0; background:transparent">
+      <div class="pos">
+        <div class="top">
+          <img src="assets/logo.jpg" alt="">
+          <span class="shop" id="posShop">Your shop</span>
+          <button class="tab on" id="tabOrder" type="button">New order</button>
+          <button class="tab" id="tabToday" type="button">Today</button>
+          <button class="tab" id="tabEdit" type="button">Edit products</button>
+        </div>
+        <div class="body" id="viewOrder">
+          <div class="menu">
+            <div class="cattabs" id="cattabs"></div>
+            <div class="band" id="band">Items</div>
+            <div class="grid" id="itemgrid"></div>
+          </div>
+          <div class="cart">
+            <div class="list">
+              <h4>Current order <small id="cartCount">0 items</small></h4>
+              <div id="cartLines"><div class="empty">Tap items to add them to the bill</div></div>
+              <div>
+                <label>Customer (optional)</label>
+                <input id="custName" placeholder="Name or mobile" maxlength="40">
+              </div>
+              <div>
+                <label>Payment</label>
+                <div class="pay"><button class="on" data-pay="Cash" type="button">Cash</button><button data-pay="UPI" type="button">UPI</button><button data-pay="Card" type="button">Card</button></div>
+              </div>
+            </div>
+            <div class="total">
+              <div class="t"><span>Total</span><b class="num" id="cartTotal">₹0</b></div>
+              <div class="btns"><button class="clear" id="clearCart" type="button">Clear</button><button class="save" id="saveOrder" type="button" disabled>Save &amp; print bill</button></div>
+            </div>
+          </div>
+        </div>
+        <div id="viewToday" hidden>
+          <div class="kpis">
+            <div class="kpi hi"><span>Today's revenue</span><b class="num" id="kRev">₹0</b></div>
+            <div class="kpi"><span>Orders</span><b class="num" id="kOrd">0</b></div>
+            <div class="kpi"><span>Average order</span><b class="num" id="kAvg">₹0</b></div>
+          </div>
+          <div class="cards2">
+            <div class="card"><h5>Payment breakdown</h5><div class="paym"><div><span>Cash</span><b class="num" id="pCash">₹0</b></div><div><span>UPI</span><b class="num" id="pUPI">₹0</b></div><div><span>Card</span><b class="num" id="pCard">₹0</b></div></div></div>
+            <div class="card"><h5>Best selling</h5><div id="best"><p class="hint">No sales yet. Save an order to see it here.</p></div></div>
+          </div>
+          <div class="card" style="margin:0 12px 12px"><h5>Recent orders</h5><div class="orders" id="recent" style="padding:0"><p class="hint">No orders yet.</p></div></div>
+        </div>
+      </div>
+      <p class="hint" style="margin-top:10px">This is a demo running in your browser. The real Bilztri app adds inventory, waste tracking, exports and Bluetooth printing. <a href="#pricing" style="color:var(--green-dark); font-weight:700">See plans</a>.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section style="background:var(--surface-2)">
+  <div class="wrap">
+    <div class="eyebrow">Everything in one app</div>
+    <h2>What the full Bilztri POS does</h2>
+    <div class="ig">
+      <div><svg class="i" viewBox="0 0 24 24"><rect x="3" y="4" width="8" height="7" rx="1.5"/><rect x="13" y="4" width="8" height="7" rx="1.5"/><rect x="3" y="13" width="8" height="7" rx="1.5"/><path d="M17 13v7M13.5 16.5h7"/></svg><b>Multiple active orders</b><span>One per table or customer, switch with a tap.</span></div>
+      <div><svg class="i" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M2 10h20M6 15h4"/></svg><b>Cash · UPI · Card</b><span>Payment mode recorded on every bill.</span></div>
+      <div><svg class="i" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><b>Today dashboard</b><span>Revenue, orders, best sellers, sales by hour.</span></div>
+      <div><svg class="i" viewBox="0 0 24 24"><path d="M12 15V3M8 7l4-4 4 4M4 13v6h16v-6"/></svg><b>Reports and exports</b><span>Day, week, month or custom range. PDF and Excel.</span></div>
+      <div><svg class="i" viewBox="0 0 24 24"><path d="M12 3l10 18H2z"/><path d="M12 10v4"/><circle cx="12" cy="17.5" r=".8" fill="currentColor"/></svg><b>Inventory with low-stock alerts</b><span>Stock value by category, two-tap restocking.</span></div>
+      <div><svg class="i" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14"/></svg><b>Waste tracking</b><span>Log wastage, stock reduces automatically.</span></div>
+      <div><svg class="i" viewBox="0 0 24 24"><path d="M7 8V3h10v5"/><rect x="3" y="8" width="18" height="9" rx="2"/><path d="M7 21v-6h10v6z"/></svg><b>Receipt printing</b><span>58 mm Bluetooth thermal, no ink ever.</span></div>
+      <div><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg><b>English and हिन्दी</b><span>Light and dark theme, adjustable text size.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="wrap">
+    <div class="eyebrow">Pricing</div>
+    <h2>Simple plans. Printer included.</h2>
+    <div class="price">
+      <div><span>Demo and setup</span><b>₹299 <small>one time</small></b><p>On your own phone or tablet. We set up your products and train your staff. <em>Printer not included.</em></p></div>
+      <div><span>Monthly plan</span><b>₹599 <small>/ month</small></b><p>Full Bilztri POS with reports, inventory and waste tracking. <em>Bilztri Mobile Printer included.</em></p></div>
+      <div class="best"><span>Annual plan</span><b>₹5,999 <small>/ year</small></b><p>Everything in monthly, paid once for 12 months. <em>Printer included.</em> Save ₹1,189 versus paying monthly.</p></div>
+    </div>
+    <div class="printer">
+      <img src="assets/printer.webp" alt="Bilztri Mobile Printer">
+      <div>
+        <div class="eyebrow">Companion hardware</div>
+        <h3>Bilztri Mobile Printer</h3>
+        <p>Pocket-size 58 mm Bluetooth thermal printer that pairs with the Bilztri app. Prints receipts, invoices and order tokens at the counter, at the table or on delivery.</p>
+        <div class="spec"><span>58 mm thermal, no ink</span><span>Bluetooth + USB-C</span><span>203 dpi</span><span>Approx. 240 g</span><span>Full shift per charge</span></div>
+      </div>
+    </div>
+    <p class="hint" style="margin-top:10px">Prices in INR, taxes as applicable. Printer specifications are typical for this model.</p>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="contact">
+      <div>
+        <div class="eyebrow" style="color:var(--lime)">Book a ₹299 demo</div>
+        <h2>We set it up with you</h2>
+        <p>Your products, your receipt branding, your staff trained, usually within 24 hours. Subscribe and the printer ships with your plan.</p>
+      </div>
+      <div class="num-box num-grid" style="display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center">
+        <div>
+        <span>Call / WhatsApp</span>
+        <b id="phoneText">+91 82876 84488</b>
+        <div class="row2">
+          <a class="btn" id="waLink" href="https://wa.me/918287684488?text=Hi%20Bilztri%2C%20I%20want%20to%20book%20a%20%E2%82%B9299%20demo." target="_blank" rel="noopener"><svg class="i" viewBox="0 0 24 24"><path d="M4 20l1.3-4A8 8 0 1 1 8 19z"/><path d="M9 9.5c.5 2.5 2.5 4.5 5 5l1.5-1.5 2 1-.5 2c-4.5.5-9-4-8.5-8.5l2-.5 1 2z"/></svg>Message on WhatsApp</a>
+          <button class="btn secondary" id="copyNum" type="button">Copy number</button>
+        </div>
+        </div>
+        <div style="text-align:center"><img src="assets/whatsapp-qr.png" alt="Scan to chat with Bilztri on WhatsApp" style="width:120px;height:120px;background:#fff;border-radius:10px;padding:6px;display:block"><span style="margin-top:6px;margin-bottom:0">Scan to chat</span></div>
+      </div>
+    </div>
+    <p class="foot">Bilztri POS · Smart billing for every business · Demo screens show values you enter and are not stored by Bilztri.</p>
+  </div>
+</section>
+
+<div id="toast" class="toast" hidden></div>
+<div id="modal" class="modal" hidden></div>
+
+<script>
+(function(){
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const fmt = n => '₹' + Math.round(n).toLocaleString('en-IN');
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  const PRESETS = {
+    food: { label: 'Restaurant / Café', icon: '<path d="M4 3v8a3 3 0 0 0 6 0V3M7 3v18M17 3c-2 2-3 5-3 8h3v10"/>', footer: 'Thank you, visit again!', cats: [
+      { name: 'Momos', items: [ ['Steam Veg','Half 4pc',40,'Full 8pc',70], ['Fried Veg','Half 4pc',50,'Full 8pc',80], ['Steam Paneer','Half 4pc',50,'Full 8pc',80], ['Kurkure Veg','Half 4pc',60,'Full 8pc',110] ] },
+      { name: 'Burgers', items: [ ['Veg Burger','Single',60,'Meal',110], ['Paneer Burger','Single',80,'Meal',130] ] },
+      { name: 'Drinks', items: [ ['Cold Coffee','Regular',80,'Large',110], ['Masala Chai','Cup',20,'',0], ['Lemon Soda','Glass',40,'',0] ] } ] },
+    retail: { label: 'Retail / Grocery', icon: '<path d="M3 9l1.5-5h15L21 9M3 9h18v3a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0zM5 14v7h14v-7"/>', footer: 'Exchange within 7 days with bill.', cats: [
+      { name: 'Grocery', items: [ ['Basmati Rice','1 kg',95,'5 kg',450], ['Toor Dal','500 g',75,'1 kg',145], ['Sugar','1 kg',48,'',0], ['Cooking Oil','1 L',140,'5 L',680] ] },
+      { name: 'Dairy', items: [ ['Milk','500 ml',29,'1 L',56], ['Curd','400 g',35,'',0], ['Paneer','200 g',85,'',0] ] },
+      { name: 'Snacks', items: [ ['Chips','Small',10,'Family',40], ['Biscuits','Pack',20,'',0], ['Namkeen','200 g',45,'',0] ] } ] },
+    salon: { label: 'Salon / Spa', icon: '<circle cx="7" cy="6" r="3"/><circle cx="7" cy="18" r="3"/><path d="M9.5 8L21 19M9.5 16L21 5"/>', footer: 'Book your next visit on WhatsApp.', cats: [
+      { name: 'Hair', items: [ ['Haircut','Men',150,'Women',350], ['Hair Wash','Basic',100,'With spa',400], ['Hair Colour','Roots',600,'Full',1200] ] },
+      { name: 'Skin', items: [ ['Facial','Basic',500,'Premium',1200], ['Cleanup','',300,'',0], ['Threading','Eyebrows',40,'Full face',150] ] },
+      { name: 'Packages', items: [ ['Bridal Package','',8000,'',0], ['Groom Package','',3500,'',0] ] } ] },
+    pharmacy: { label: 'Pharmacy', icon: '<rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V4h8v3M12 11v6M9 14h6"/>', footer: 'Consult your doctor before use.', cats: [
+      { name: 'Medicines', items: [ ['Paracetamol 500','Strip',22,'',0], ['Cetirizine','Strip',18,'',0], ['ORS Sachet','1 pc',20,'Pack of 5',90] ] },
+      { name: 'Personal care', items: [ ['Hand Sanitizer','100 ml',60,'500 ml',220], ['Face Mask','1 pc',10,'Box of 50',350], ['Band-Aid','Pack',30,'',0] ] },
+      { name: 'Baby', items: [ ['Diapers','S pack',280,'M pack',320], ['Baby Wipes','72 pcs',120,'',0] ] } ] },
+    custom: { label: 'Something else', icon: '<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>', footer: 'Thank you for your purchase!', cats: [
+      { name: 'Products', items: [ ['Item 1','Regular',100,'',0], ['Item 2','Small',50,'Large',90] ] },
+      { name: 'Services', items: [ ['Service 1','',250,'',0] ] } ] }
+  };
+
+  let S = { shop: '', phone: '', footer: '', type: 'food', cats: [], cart: [], pay: 'Cash', orders: [], cat: 0, step: 1 };
+  const fresh = (type) => JSON.parse(JSON.stringify(PRESETS[type].cats)).map(c => ({ name: c.name, items: c.items.map(i => ({ name: i[0], v1: i[1], p1: i[2], v2: i[3], p2: i[4] })) }));
+
+  function load(){ try { const raw = localStorage.getItem('bilztri-demo'); if (raw) { const o = JSON.parse(raw); if (o && o.cats && o.cats.length) S = Object.assign(S, o); } } catch(e){} if (!S.cats.length) { S.cats = fresh('food'); S.footer = PRESETS.food.footer; } }
+  function save(){ try { localStorage.setItem('bilztri-demo', JSON.stringify(S)); } catch(e){} }
+  function toast(msg){ const t = $('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(()=>{ t.hidden = true; }, 1800); }
+
+  /* STEP NAV */
+  function go(step){ S.step = step; [1,2,3].forEach(n => { $('pane'+n).hidden = n !== step; $('st'+n).classList.toggle('on', n === step); }); if (step === 3) renderPOS(); if (step === 2) renderCats(); save(); }
+  document.querySelectorAll('.steps button').forEach(b => b.addEventListener('click', () => go(+b.dataset.step)));
+  $('to2').addEventListener('click', () => { readProfile(); go(2); });
+  $('back1').addEventListener('click', () => go(1));
+  $('to3').addEventListener('click', () => { if (!S.cats.some(c => c.items.length)) { toast('Add at least one item first'); return; } go(3); $('pane3').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+  $('resetAll').addEventListener('click', () => { S = { shop:'', phone:'', footer: PRESETS.food.footer, type:'food', cats: fresh('food'), cart:[], pay:'Cash', orders:[], cat:0, step:1 }; save(); fillProfile(); renderTypes(); toast('Demo reset'); });
+
+  /* PROFILE */
+  function readProfile(){ S.shop = $('shopName').value.trim(); S.phone = $('shopPhone').value.trim(); S.footer = $('shopFooter').value.trim(); save(); }
+  function fillProfile(){ $('shopName').value = S.shop; $('shopPhone').value = S.phone; $('shopFooter').value = S.footer; }
+  ['shopName','shopPhone','shopFooter'].forEach(id => $(id).addEventListener('input', readProfile));
+  function renderTypes(){ const box = $('types'); box.innerHTML = ''; Object.keys(PRESETS).forEach(k => { const b = document.createElement('button'); b.type = 'button'; b.className = k === S.type ? 'on' : ''; b.innerHTML = '<svg class="i" viewBox="0 0 24 24">' + PRESETS[k].icon + '</svg>' + esc(PRESETS[k].label); b.addEventListener('click', () => { S.type = k; S.cats = fresh(k); S.cart = []; S.cat = 0; if (!$('shopFooter').value.trim()) { S.footer = PRESETS[k].footer; $('shopFooter').value = S.footer; } save(); renderTypes(); toast(PRESETS[k].label + ' catalogue loaded'); }); box.appendChild(b); }); }
+
+  /* CATALOGUE EDITOR */
+  function renderCats(){
+    const box = $('cats'); box.innerHTML = '';
+    S.cats.forEach((c, ci) => {
+      const el = document.createElement('div'); el.className = 'cat';
+      el.innerHTML = '<header><input value="' + esc(c.name) + '" aria-label="Category name" maxlength="24"><button class="del" type="button" title="Remove category">✕</button></header><div class="items"></div>';
+      el.querySelector('header input').addEventListener('input', e => { c.name = e.target.value; save(); });
+      el.querySelector('header .del').addEventListener('click', () => { S.cats.splice(ci,1); S.cat = 0; save(); renderCats(); });
+      const items = el.querySelector('.items');
+      c.items.forEach((it, ii) => {
+        const r = document.createElement('div'); r.className = 'row';
+        r.innerHTML = '<input placeholder="Item name" value="' + esc(it.name) + '" maxlength="30"><input placeholder="Variant 1 · price" value="' + esc(it.v1 ? it.v1 + ' · ' + it.p1 : it.p1) + '"><input placeholder="Variant 2 · price (optional)" value="' + esc(it.v2 ? it.v2 + ' · ' + it.p2 : '') + '"><button class="del" type="button" title="Remove item">✕</button>';
+        const [n, a, b] = r.querySelectorAll('input');
+        n.addEventListener('input', e => { it.name = e.target.value; save(); });
+        const parse = (v) => { const m = String(v).trim().match(/^(.*?)[\s·:-]*([\d.]+)\s*$/); return m ? { v: m[1].replace(/[·:-]\s*$/,'').trim(), p: +m[2] || 0 } : { v: String(v).trim(), p: 0 }; };
+        a.addEventListener('change', e => { const o = parse(e.target.value); it.v1 = o.v; it.p1 = o.p; save(); });
+        b.addEventListener('change', e => { const o = parse(e.target.value); it.v2 = o.v; it.p2 = o.p; if (!o.p) { it.v2 = ''; it.p2 = 0; } save(); });
+        r.querySelector('.del').addEventListener('click', () => { c.items.splice(ii,1); save(); renderCats(); });
+        items.appendChild(r);
+      });
+      const add = document.createElement('button'); add.type = 'button'; add.className = 'add'; add.textContent = '+ Add item'; add.addEventListener('click', () => { c.items.push({ name:'', v1:'Regular', p1:0, v2:'', p2:0 }); save(); renderCats(); const last = items.querySelector('.row:last-of-type input'); if (last) last.focus(); });
+      items.appendChild(add);
+      box.appendChild(el);
+    });
+  }
+  $('addCat').addEventListener('click', () => { S.cats.push({ name: 'New category', items: [] }); save(); renderCats(); });
+
+  /* POS */
+  const key = (ci, ii, v) => ci + ':' + ii + ':' + v;
+  function renderPOS(){
+    $('posShop').textContent = S.shop || 'Your shop';
+    const tabs = $('cattabs'); tabs.innerHTML = '';
+    S.cats.forEach((c, ci) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = c.name || 'Category'; b.className = ci === S.cat ? 'on' : ''; b.addEventListener('click', () => { S.cat = ci; save(); renderPOS(); }); tabs.appendChild(b); });
+    if (S.cat >= S.cats.length) S.cat = 0;
+    const c = S.cats[S.cat]; $('band').textContent = c ? (c.name || 'Items') : 'Items';
+    const grid = $('itemgrid'); grid.innerHTML = '';
+    (c ? c.items : []).filter(it => it.name && it.p1 > 0).forEach(it => {
+      const ii = c.items.indexOf(it);
+      const el = document.createElement('div'); el.className = 'item'; el.innerHTML = '<b>' + esc(it.name) + '</b><div class="vars"></div>';
+      const vars = el.querySelector('.vars');
+      [[1, it.v1, it.p1], it.p2 > 0 ? [2, it.v2, it.p2] : null].filter(Boolean).forEach(([v, label, price]) => {
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'var';
+        const q = S.cart.find(l => l.k === key(S.cat, ii, v));
+        b.innerHTML = '<small>' + esc(label || 'Regular') + '</small><em class="num">' + fmt(price) + '</em>' + (q ? '<span class="q">' + q.qty + '</span>' : '');
+        if (q) b.classList.add('sel');
+        b.addEventListener('click', () => addToCart(key(S.cat, ii, v), it.name + (label ? ' ' + label : ''), price));
+        vars.appendChild(b);
+      });
+      grid.appendChild(el);
+    });
+    if (!grid.children.length) grid.innerHTML = '<div class="empty">No priced items in this category. Use "Edit products" to add some.</div>';
+    renderCart();
+  }
+  function addToCart(k, name, price){ const l = S.cart.find(x => x.k === k); if (l) l.qty++; else S.cart.push({ k, name, price, qty: 1 }); save(); renderPOS(); }
+  function renderCart(){
+    const box = $('cartLines'); box.innerHTML = '';
+    if (!S.cart.length) box.innerHTML = '<div class="empty">Tap items to add them to the bill</div>';
+    S.cart.forEach(l => {
+      const el = document.createElement('div'); el.className = 'line';
+      el.innerHTML = '<b>' + esc(l.name) + '</b><span class="p num">' + fmt(l.price * l.qty) + '</span><div class="qty"><button type="button" class="minus">−</button><span class="num">' + l.qty + '</span><button type="button" class="plus">+</button><span style="flex:1"></span><button type="button" class="rm" style="width:auto;padding:0 8px;font-size:12px">Remove</button></div>';
+      el.querySelector('.minus').addEventListener('click', () => { l.qty--; if (l.qty <= 0) S.cart = S.cart.filter(x => x !== l); save(); renderPOS(); });
+      el.querySelector('.plus').addEventListener('click', () => { l.qty++; save(); renderPOS(); });
+      el.querySelector('.rm').addEventListener('click', () => { S.cart = S.cart.filter(x => x !== l); save(); renderPOS(); });
+      box.appendChild(el);
+    });
+    const n = S.cart.reduce((a, l) => a + l.qty, 0), t = S.cart.reduce((a, l) => a + l.qty * l.price, 0);
+    $('cartCount').textContent = n + (n === 1 ? ' item' : ' items'); $('cartTotal').textContent = fmt(t); $('saveOrder').disabled = !n;
+    document.querySelectorAll('.pay button').forEach(b => b.classList.toggle('on', b.dataset.pay === S.pay));
+  }
+  document.querySelectorAll('.pay button').forEach(b => b.addEventListener('click', () => { S.pay = b.dataset.pay; save(); renderCart(); }));
+  $('clearCart').addEventListener('click', () => { S.cart = []; save(); renderPOS(); });
+  $('saveOrder').addEventListener('click', () => {
+    if (!S.cart.length) return;
+    const o = { id: 'B' + String(1001 + S.orders.length), at: new Date().toISOString(), lines: S.cart.map(l => ({ name: l.name, price: l.price, qty: l.qty })), pay: S.pay, cust: $('custName').value.trim(), total: S.cart.reduce((a,l)=>a+l.qty*l.price,0) };
+    S.orders.push(o); S.cart = []; $('custName').value = ''; save(); renderPOS(); showReceipt(o); toast('Order ' + o.id + ' saved');
+  });
+
+  /* TODAY */
+  function renderToday(){
+    const os = S.orders, rev = os.reduce((a,o)=>a+o.total,0);
+    $('kRev').textContent = fmt(rev); $('kOrd').textContent = os.length; $('kAvg').textContent = fmt(os.length ? rev/os.length : 0);
+    ['Cash','UPI','Card'].forEach(p => $('p'+p).textContent = fmt(os.filter(o=>o.pay===p).reduce((a,o)=>a+o.total,0)));
+    const cnt = {}; os.forEach(o => o.lines.forEach(l => { cnt[l.name] = (cnt[l.name]||0) + l.qty; }));
+    const top = Object.entries(cnt).sort((a,b)=>b[1]-a[1]).slice(0,5); const max = top.length ? top[0][1] : 1;
+    $('best').innerHTML = top.length ? top.map(([n,q]) => '<div class="hl"><span>' + esc(n) + '</span><i style="width:' + Math.round(q/max*100) + '%"></i><em class="num">' + q + '</em></div>').join('') : '<p class="hint">No sales yet. Save an order to see it here.</p>';
+    $('recent').innerHTML = os.length ? os.slice(-6).reverse().map(o => '<div><span>' + o.id + (o.cust ? ' · ' + esc(o.cust) : '') + '</span><span class="tag">' + o.pay + '</span><b class="num">' + fmt(o.total) + '</b></div>').join('') : '<p class="hint">No orders yet.</p>';
+  }
+  function view(v){ $('viewOrder').hidden = v !== 'order'; $('viewToday').hidden = v !== 'today'; $('tabOrder').classList.toggle('on', v === 'order'); $('tabToday').classList.toggle('on', v === 'today'); if (v === 'today') renderToday(); }
+  $('tabOrder').addEventListener('click', () => view('order'));
+  $('tabToday').addEventListener('click', () => view('today'));
+  $('tabEdit').addEventListener('click', () => { go(2); $('pane2').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+
+  /* RECEIPT */
+  function showReceipt(o){
+    const d = new Date(o.at); const date = d.toLocaleDateString('en-IN') + ' ' + d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+    const m = $('modal');
+    m.innerHTML = '<div><div class="receipt">' +
+      '<img class="logo-r" src="assets/logo.jpg" alt="">' +
+      '<div class="c"><b>' + esc(S.shop || 'YOUR SHOP') + '</b>' + (S.phone ? '<br>Ph: ' + esc(S.phone) : '') + '</div>' +
+      '<div class="c">SALES RECEIPT</div><div class="dash"></div>' +
+      '<div>Date: ' + date + '</div><div>Bill #: ' + o.id + '</div>' + (o.cust ? '<div>Customer: ' + esc(o.cust) + '</div>' : '') +
+      '<div class="dash"></div><div class="r"><span>Item</span><span>Qty&nbsp;&nbsp;Amount</span></div><div class="dash"></div>' +
+      o.lines.map(l => '<div class="r"><span>' + esc(l.name) + '</span><span>' + l.qty + '&nbsp;&nbsp;' + fmt(l.price*l.qty) + '</span></div>').join('') +
+      '<div class="dash"></div><div class="r tot"><span>TOTAL</span><span>' + fmt(o.total) + '</span></div><div class="r"><span>Paid by</span><span>' + o.pay + '</span></div><div class="dash"></div>' +
+      '<div class="c">' + esc(S.footer || 'Thank you for your purchase!') + '</div></div>' +
+      '<div class="actions"><button class="btn" id="closeR" type="button">Next order</button><button class="btn secondary" id="todayR" type="button">View Today dashboard</button></div></div>';
+    m.hidden = false;
+    $('closeR').addEventListener('click', () => { m.hidden = true; });
+    $('todayR').addEventListener('click', () => { m.hidden = true; view('today'); });
+    m.addEventListener('click', e => { if (e.target === m) m.hidden = true; });
+  }
+
+  /* CONTACT */
+  $('copyNum').addEventListener('click', () => {
+    const txt = '+91 82876 84488';
+    const fallback = () => { const r = document.createRange(); r.selectNodeContents($('phoneText')); const s = window.getSelection(); s.removeAllRanges(); s.addRange(r); toast('Number selected, press copy'); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(() => toast('Number copied')).catch(fallback); else fallback();
+  });
+  function updateWA(){ const shop = S.shop ? ' for ' + S.shop : ''; $('waLink').href = 'https://wa.me/918287684488?text=' + encodeURIComponent('Hi Bilztri, I tried the demo' + shop + '. I want to book a ₹299 demo.'); }
+  $('shopName').addEventListener('input', updateWA);
+
+  /* BOOT */
+  load(); fillProfile(); renderTypes(); renderCats(); updateWA(); go(S.step || 1); if (S.step === 3) view('order');
+})();
+</script>
+
+</body>
+</html>
