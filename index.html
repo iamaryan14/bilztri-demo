@@ -5,6 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Bilztri POS: smart billing for every business. Try the live demo with your own shop name and products.">
 <link rel="icon" href="assets/logo.jpg">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Bilztri POS">
+<meta property="og:title" content="Bilztri POS Live Demo">
+<meta property="og:description" content="Smart billing for every business. Enter your shop name, add your items and bill in minutes. Runs on any phone, tablet or laptop.">
+<meta property="og:url" content="https://iamaryan14.github.io/bilztri-demo/">
+<meta property="og:image" content="https://iamaryan14.github.io/bilztri-demo/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Bilztri POS Live Demo">
+<meta name="twitter:description" content="Smart billing for every business. Build your own shop and bill in minutes.">
+<meta name="twitter:image" content="https://iamaryan14.github.io/bilztri-demo/assets/og-image.png">
+<meta name="theme-color" content="#15181c">
 <title>Bilztri POS Live Demo</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap">
 <style>
@@ -234,6 +247,7 @@
     <div class="ctas">
       <a class="btn" href="#demo"><svg class="i" viewBox="0 0 24 24"><path d="M5 3l14 9-14 9z"/></svg>Try it with your own shop</a>
       <a class="btn secondary" href="#pricing">See pricing</a>
+      <button class="btn secondary" id="shareBtn" type="button"><svg class="i" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>Share this demo</button>
     </div>
   </div>
 </header>
@@ -565,6 +579,15 @@
   });
   function updateWA(){ const shop = S.shop ? ' for ' + S.shop : ''; $('waLink').href = 'https://wa.me/918287684488?text=' + encodeURIComponent('Hi Bilztri, I tried the demo' + shop + '. I want to book a ₹299 demo.'); }
   $('shopName').addEventListener('input', updateWA);
+
+  /* SHARE */
+  $('shareBtn').addEventListener('click', () => {
+    const url = 'https://iamaryan14.github.io/bilztri-demo/';
+    const text = 'Bilztri POS: smart billing for every business. Try the live demo with your own shop: ' + url;
+    if (navigator.share) { navigator.share({ title: 'Bilztri POS Live Demo', text: 'Bilztri POS: smart billing for every business. Try it with your own shop.', url }).catch(() => {}); return; }
+    const fb = () => { window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank'); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(() => toast('Link copied, paste it anywhere')).catch(fb); else fb();
+  });
 
   /* BOOT */
   load(); fillProfile(); renderTypes(); renderCats(); updateWA(); go(S.step || 1); if (S.step === 3) view('order');
