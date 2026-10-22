@@ -60,6 +60,15 @@
   section { padding-block: 44px; }
   .num { font-variant-numeric: tabular-nums; }
 
+  .ptabs { display:flex; gap:8px; flex-wrap:wrap; margin:14px 0; }
+  .ptabs button { background: var(--surface); border:1px solid var(--line); border-radius: 20px; padding: 8px 14px; font-weight: 700; color: var(--fg); display:flex; align-items:center; gap:7px; }
+  .ptabs button.on { background: var(--ink); color: var(--ink-fg); border-color: var(--ink); }
+  .ptabs button svg.i { width:18px; height:18px; }
+  .ptabs button.on svg.i { color: var(--lime); }
+  .pos.preview .body { min-height: 0; }
+  .pos.preview .menu, .pos.preview .cart { pointer-events: none; }
+  .pos.preview .top .tab { pointer-events: none; }
+
   /* HERO */
   .hero { background: var(--ink); color: var(--ink-fg); padding-block: 40px 48px; position: relative; overflow: hidden; }
   .hero:after { content: ""; position: absolute; right: -160px; top: -160px; width: 420px; height: 420px; border-radius: 50%; background: radial-gradient(circle, rgba(95,196,25,.32), rgba(95,196,25,0) 62%); pointer-events: none; }
@@ -251,6 +260,18 @@
     </div>
   </div>
 </header>
+
+
+<!-- PREVIEW BY BUSINESS -->
+<section id="preview" style="padding-bottom:0">
+  <div class="wrap">
+    <div class="eyebrow">Built for every business</div>
+    <h2>See it for your kind of shop</h2>
+    <div class="ptabs" id="ptabs"></div>
+    <div id="pmock"></div>
+    <p class="hint" style="margin-top:8px">Tap a business type to switch the screen. Then build your own below.</p>
+  </div>
+</section>
 
 <!-- LIVE DEMO -->
 <section id="demo">
@@ -586,6 +607,22 @@
     const fb = () => { window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank'); };
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(() => toast('Link copied, paste it anywhere')).catch(fb); else fb();
   });
+
+  /* PREVIEW BY BUSINESS */
+  const SHOPS = { food: 'Momo Hub Café', retail: 'Gupta General Store', salon: 'Glow Salon & Spa', pharmacy: 'Sharma Medicos' };
+  function previewHTML(k){
+    const p = PRESETS[k], c = p.cats[0], first = c.items.slice(0, 3);
+    const items = first.map((i, idx) => '<div class="item"><b>' + esc(i[0]) + '</b><div class="vars"><button class="var' + (idx < 2 ? ' sel' : '') + '" type="button"><small>' + esc(i[1] || 'Regular') + '</small><em class="num">' + fmt(i[2]) + '</em>' + (idx < 2 ? '<span class="q">1</span>' : '') + '</button>' + (i[4] ? '<button class="var" type="button"><small>' + esc(i[3]) + '</small><em class="num">' + fmt(i[4]) + '</em></button>' : '') + '</div></div>').join('');
+    const sel = first.slice(0, 2); const total = sel.reduce((a, i) => a + i[2], 0);
+    const lines = sel.map(i => '<div class="line"><b>' + esc(i[0] + (i[1] ? ' ' + i[1] : '')) + '</b><span class="p num">' + fmt(i[2]) + '</span><div class="qty"><button type="button">−</button><span class="num">1</span><button type="button" class="plus">+</button></div></div>').join('');
+    return '<div class="pos preview"><div class="top"><img src="assets/logo.jpg" alt=""><span class="shop">' + esc(SHOPS[k] || 'Your shop') + '</span><span class="tab on">New order</span><span class="tab">Today</span><span class="tab">Inventory</span></div><div class="body"><div class="menu"><div class="cattabs">' + p.cats.map((x, i) => '<button class="' + (i ? '' : 'on') + '" type="button">' + esc(x.name) + '</button>').join('') + '</div><div class="band">' + esc(c.name) + '</div><div class="grid">' + items + '</div></div><div class="cart"><div class="list"><h4>Order 1 <small>2 items</small></h4>' + lines + '<div><label>Payment</label><div class="pay"><button class="on" type="button">Cash</button><button type="button">UPI</button><button type="button">Card</button></div></div></div><div class="total"><div class="t"><span>Total</span><b class="num">' + fmt(total) + '</b></div><div class="btns"><button class="clear" type="button">Clear</button><button class="save" type="button">Save &amp; print bill</button></div></div></div></div></div>';
+  }
+  (function(){
+    const tabs = $('ptabs'); let cur = 'food';
+    const draw = () => { $('pmock').innerHTML = previewHTML(cur); tabs.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.k === cur)); };
+    Object.keys(PRESETS).filter(k => k !== 'custom').forEach(k => { const b = document.createElement('button'); b.type = 'button'; b.dataset.k = k; b.innerHTML = '<svg class="i" viewBox="0 0 24 24">' + PRESETS[k].icon + '</svg>' + esc(PRESETS[k].label); b.addEventListener('click', () => { cur = k; draw(); }); tabs.appendChild(b); });
+    draw();
+  })();
 
   /* BOOT */
   load(); fillProfile(); renderTypes(); renderCats(); updateWA(); go(S.step || 1); if (S.step === 3) view('order');
