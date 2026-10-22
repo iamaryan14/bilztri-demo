@@ -362,11 +362,9 @@
 <section id="pricing">
   <div class="wrap">
     <div class="eyebrow">Pricing</div>
-    <h2>Simple plans. Printer included.</h2>
-    <div class="price">
-      <div><span>Demo and setup</span><b>₹299 <small>one time</small></b><p>On your own phone or tablet. We set up your products and train your staff. <em>Printer not included.</em></p></div>
-      <div><span>Monthly plan</span><b>₹599 <small>/ month</small></b><p>Full Bilztri POS with reports, inventory and waste tracking. <em>Bilztri Mobile Printer included.</em></p></div>
-      <div class="best"><span>Annual plan</span><b>₹5,999 <small>/ year</small></b><p>Everything in monthly, paid once for 12 months. <em>Printer included.</em> Save ₹1,189 versus paying monthly.</p></div>
+    <h2>Plans starting from ₹399</h2>
+    <div class="price" style="grid-template-columns:1fr">
+      <div class="best"><span>Plans starting from</span><b>₹399 <small>pay monthly or yearly</small></b><p>Demo and setup on your own device. <em>Bilztri Mobile Printer included</em> with subscription plans. Call or WhatsApp for the plan that fits your counter.</p></div>
     </div>
     <div class="printer">
       <img src="assets/printer.webp" alt="Bilztri Mobile Printer">
@@ -386,7 +384,7 @@
   <div class="wrap">
     <div class="contact">
       <div>
-        <div class="eyebrow" style="color:var(--lime)">Book a ₹299 demo</div>
+        <div class="eyebrow" style="color:var(--lime)">Book a demo</div>
         <h2>We set it up with you</h2>
         <p>Your products, your receipt branding, your staff trained, usually within 24 hours. Subscribe and the printer ships with your plan.</p>
       </div>
@@ -395,7 +393,7 @@
         <span>Call / WhatsApp</span>
         <b id="phoneText">+91 82876 84488</b>
         <div class="row2">
-          <a class="btn" id="waLink" href="https://wa.me/918287684488?text=Hi%20Bilztri%2C%20I%20want%20to%20book%20a%20%E2%82%B9299%20demo." target="_blank" rel="noopener"><svg class="i" viewBox="0 0 24 24"><path d="M4 20l1.3-4A8 8 0 1 1 8 19z"/><path d="M9 9.5c.5 2.5 2.5 4.5 5 5l1.5-1.5 2 1-.5 2c-4.5.5-9-4-8.5-8.5l2-.5 1 2z"/></svg>Message on WhatsApp</a>
+          <a class="btn" id="waLink" href="https://wa.me/918287684488?text=Hi%20Bilztri%2C%20I%20want%20to%20book%20a%20demo." target="_blank" rel="noopener"><svg class="i" viewBox="0 0 24 24"><path d="M4 20l1.3-4A8 8 0 1 1 8 19z"/><path d="M9 9.5c.5 2.5 2.5 4.5 5 5l1.5-1.5 2 1-.5 2c-4.5.5-9-4-8.5-8.5l2-.5 1 2z"/></svg>Message on WhatsApp</a>
           <button class="btn secondary" id="copyNum" type="button">Copy number</button>
         </div>
         </div>
@@ -577,7 +575,7 @@
     const fallback = () => { const r = document.createRange(); r.selectNodeContents($('phoneText')); const s = window.getSelection(); s.removeAllRanges(); s.addRange(r); toast('Number selected, press copy'); };
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(() => toast('Number copied')).catch(fallback); else fallback();
   });
-  function updateWA(){ const shop = S.shop ? ' for ' + S.shop : ''; $('waLink').href = 'https://wa.me/918287684488?text=' + encodeURIComponent('Hi Bilztri, I tried the demo' + shop + '. I want to book a ₹299 demo.'); }
+  function updateWA(){ const shop = S.shop ? ' for ' + S.shop : ''; $('waLink').href = 'https://wa.me/918287684488?text=' + encodeURIComponent('Hi Bilztri, I tried the demo' + shop + '. I want to book a demo.'); }
   $('shopName').addEventListener('input', updateWA);
 
   /* SHARE */
